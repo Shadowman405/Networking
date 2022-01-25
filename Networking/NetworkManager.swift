@@ -14,7 +14,6 @@ class NetworkManager {
     static func getRequest(url: String) {
         
         guard let url = URL(string: url) else { return }
-        //"https://jsonplaceholder.typicode.com/posts"
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
@@ -35,7 +34,6 @@ class NetworkManager {
     
     static func postRequest(url: String) {
         guard let url = URL(string: url) else { return }
-        //"https://jsonplaceholder.typicode.com/posts"
         
         let userData = ["Course": "Networking", "Lesson": "GET and POST"]
         
@@ -60,6 +58,40 @@ class NetworkManager {
                 print(error)
             }
         } .resume()
+    }
+    
+    static func downloadImage(url: String, completion: @escaping (_ image:UIImage)->()) {
+        guard let url = URL(string: url) else { return }
+        //"https://applelives.com/wp-content/uploads/2016/03/iPhone-SE-11.jpeg"
+        
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        } .resume()
+    }
+    
+    static func fetchData(url: String, completion: @escaping (_ courses: [Course])->()) {
+        let jsonUrlString = url
+        //let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_website_description"
+        
+        
+        guard let url = URL(string: jsonUrlString) else {return}
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {return}
+            
+            do {
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let courses = try decoder.decode([Course].self, from: data)
+                completion(courses)
+            } catch let error {
+                print(error)
+            }
+        }.resume()
     }
 
 }
