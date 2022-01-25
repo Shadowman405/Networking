@@ -5,6 +5,8 @@ class CoursesViewController: UIViewController {
     @IBOutlet var tableView: UITableView!
     
     private var courses = [Course]()
+    private var courseName: String?
+    private var courseURL: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,6 +58,15 @@ class CoursesViewController: UIViewController {
             }
         }
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let webViewVC = segue.destination as! WebViewController
+        webViewVC.selectedCourse = courseName
+        
+        if let url = courseURL {
+            webViewVC.courseURL = url
+        }
+    }
 
 }
 
@@ -81,6 +92,15 @@ extension CoursesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let course = courses[indexPath.row]
+        
+        courseURL = course.link
+        courseName = course.name
+        
+        performSegue(withIdentifier: "Description", sender: self)
     }
 }
 
