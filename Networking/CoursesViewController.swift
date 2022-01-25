@@ -11,14 +11,17 @@ class CoursesViewController: UIViewController {
     }
     
     func fetchData() {
-        let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_course"
+        //let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_course"
+        let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_website_description"
+        
+        
         guard let url = URL(string: jsonUrlString) else {return}
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else {return}
             
             do {
-                let course = try JSONDecoder().decode(Course.self, from: data)
-                print(course.name)
+                let courses = try JSONDecoder().decode(websiteDescription.self, from: data)
+                print("Websitename \(courses.websiteName), website description \(courses.websiteDescription) , courses \(courses.courses)")
             } catch let error {
                 print(error)
             }
