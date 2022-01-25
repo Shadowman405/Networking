@@ -4,6 +4,8 @@ class CoursesViewController: UIViewController {
 
     @IBOutlet var tableView: UITableView!
     
+    private var courses = [Course]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -11,8 +13,8 @@ class CoursesViewController: UIViewController {
     }
     
     func fetchData() {
-        //let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_course"
-        let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_website_description"
+        let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_courses"
+        //let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_website_description"
         
         
         guard let url = URL(string: jsonUrlString) else {return}
@@ -20,12 +22,37 @@ class CoursesViewController: UIViewController {
             guard let data = data else {return}
             
             do {
-                let courses = try JSONDecoder().decode(websiteDescription.self, from: data)
-                print("Websitename \(courses.websiteName), website description \(courses.websiteDescription) , courses \(courses.courses)")
+                self.courses = try JSONDecoder().decode([Course].self, from: data)
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
             } catch let error {
                 print(error)
             }
         }.resume()
+    }
+    
+    private func configureCell(cell: TableViewCell, for indexPath: IndexPath) {
+        let course = courses[indexPath.row]
+        cell.courseNameLabel.text = course.name
+        
+        if let numberOfLessons = course.number_of_lessons {
+            cell.numberOfLessons.text = "Number of lessons: \(numberOfLessons)"
+        }
+        
+        if let numberOfTest = course.number_of_tests {
+            cell.numberOfTests.text = "Number of test: \(numberOfTest)"
+        }
+        
+        DispatchQueue.global().async {
+            guard let imageUrl = URL(string: course.imageUrl!) else { return  }
+            guard let imageData = try? Data(contentsOf: imageUrl) else {return}
+            
+            DispatchQueue.main.async {
+                cell.courseImage.image = UIImage(data: imageData)
+            }
+        }
     }
 
 }
@@ -35,13 +62,13 @@ class CoursesViewController: UIViewController {
 extension CoursesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return courses.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! TableViewCell
-        
+        configureCell(cell: cell, for: indexPath)
         return cell
     }
 }
