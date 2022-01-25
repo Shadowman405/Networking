@@ -1,10 +1,20 @@
+//
+//  NetworkManager.swift
+//  Networking
+//
+//  Created by Maxim Mitin on 25.01.22.
+//  Copyright © 2022 Alexey Efimov. All rights reserved.
+//
+
+import Foundation
 import UIKit
 
-class ViewController: UIViewController {
+class NetworkManager {
     
-    @IBAction func getRequest(_ sender: Any) {
+    static func getRequest(url: String) {
         
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else { return }
+        guard let url = URL(string: url) else { return }
+        //"https://jsonplaceholder.typicode.com/posts"
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
@@ -23,9 +33,9 @@ class ViewController: UIViewController {
         }.resume()
     }
     
-    @IBAction func postRequest(_ sender: Any) {
-        
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else { return }
+    static func postRequest(url: String) {
+        guard let url = URL(string: url) else { return }
+        //"https://jsonplaceholder.typicode.com/posts"
         
         let userData = ["Course": "Networking", "Lesson": "GET and POST"]
         
@@ -51,6 +61,5 @@ class ViewController: UIViewController {
             }
         } .resume()
     }
-    
-}
 
+}
