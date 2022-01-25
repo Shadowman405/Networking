@@ -22,7 +22,9 @@ class CoursesViewController: UIViewController {
             guard let data = data else {return}
             
             do {
-                self.courses = try JSONDecoder().decode([Course].self, from: data)
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                self.courses = try decoder.decode([Course].self, from: data)
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
@@ -37,11 +39,11 @@ class CoursesViewController: UIViewController {
         let course = courses[indexPath.row]
         cell.courseNameLabel.text = course.name
         
-        if let numberOfLessons = course.number_of_lessons {
+        if let numberOfLessons = course.numberOfLessons {
             cell.numberOfLessons.text = "Number of lessons: \(numberOfLessons)"
         }
         
-        if let numberOfTest = course.number_of_tests {
+        if let numberOfTest = course.numberOfTests {
             cell.numberOfTests.text = "Number of test: \(numberOfTest)"
         }
         
