@@ -7,19 +7,23 @@ class CoursesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        fetchData()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func fetchData() {
+        let jsonUrlString = "https://swiftbook.ru//wp-content/uploads/api/api_course"
+        guard let url = URL(string: jsonUrlString) else {return}
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else {return}
+            
+            do {
+                let course = try JSONDecoder().decode(Course.self, from: data)
+                print(course.name)
+            } catch let error {
+                print(error)
+            }
+        }.resume()
     }
-    */
 
 }
 
