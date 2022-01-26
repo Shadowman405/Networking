@@ -60,7 +60,7 @@ extension DataProvider: URLSessionDownloadDelegate {
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard totalBytesExpectedToWrite == NSURLSessionTransferSizeUnknown else {return}
+        guard totalBytesExpectedToWrite != NSURLSessionTransferSizeUnknown else {return}
         
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
         print("Download progress: \(progress)")
