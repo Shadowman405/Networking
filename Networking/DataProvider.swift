@@ -11,12 +11,28 @@ import UIKit
 class DataProvider: NSObject {
     
     private var downloadTask: URLSessionDownloadTask!
+    var fileLocation: ((URL) -> ())?
+    
     private lazy var bgSession: URLSession = {
         let config = URLSessionConfiguration.background(withIdentifier: "ru.swiftbook.Networking")
 //        config.isDiscretionary = true
         config.sessionSendsLaunchEvents = true
         return URLSession(configuration: config, delegate: self, delegateQueue: nil)
     }()
+    
+    func startDownload() {
+        if let url = URL(string: "https://speed.hetzner.de/100MB.bin"){
+            downloadTask = bgSession.downloadTask(with: url)
+            downloadTask.earliestBeginDate = Date().addingTimeInterval(3)
+            downloadTask.countOfBytesClientExpectsToSend = 512
+            downloadTask.countOfBytesClientExpectsToReceive = 100 * 1024 * 1024
+            downloadTask.resume()
+        }
+    }
+    
+    func stopDownload() {
+        downloadTask.cancel()
+    }
 
 }
 
@@ -31,4 +47,16 @@ extension DataProvider: URLSessionDelegate {
             completionHandler()
         }
     }
+}
+
+
+extension DataProvider: URLSessionDownloadDelegate {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print("Did finish download: \(location.absoluteString)")
+        DispatchQueue.main.async {
+            self.fileLocation?(location)
+        }
+    }
+    
+    
 }
