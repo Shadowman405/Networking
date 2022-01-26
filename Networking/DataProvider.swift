@@ -12,6 +12,7 @@ class DataProvider: NSObject {
     
     private var downloadTask: URLSessionDownloadTask!
     var fileLocation: ((URL) -> ())?
+    var onProgress: ((Double) -> ())?
     
     private lazy var bgSession: URLSession = {
         let config = URLSessionConfiguration.background(withIdentifier: "ru.swiftbook.Networking")
@@ -58,5 +59,14 @@ extension DataProvider: URLSessionDownloadDelegate {
         }
     }
     
-    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        guard totalBytesExpectedToWrite == NSURLSessionTransferSizeUnknown else {return}
+        
+        let progress = Double(totalBytesWritten / totalBytesExpectedToWrite)
+        print("Download progress: \(progress)")
+        
+        DispatchQueue.main.async {
+            self.onProgress?(progress)
+        }
+    }
 }
